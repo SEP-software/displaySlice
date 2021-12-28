@@ -1,0 +1,9 @@
+@PACKAGE_INIT@
+
+
+
+check_required_components(displaySlice)
+
+if(NOT TARGET SEP::IO::displaySlice)
+  include("${CMAKE_CURRENT_LIST_DIR}/displaySliceTargets.cmake")
+endif()
