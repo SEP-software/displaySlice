@@ -18,7 +18,6 @@ class dataset {
                   std::shared_ptr<SEP::paramObj> p, int in, int im = 1);
   virtual ~dataset() { clean_bufs(); }
   void clean_bufs() {
-    // for(int i=0; i < (int)buf.size(); i++) delete buf[i];
     buf.clear();
   }
   int check_load_buffer(std::shared_ptr<orient_cube> pos, const int iax1,
@@ -26,20 +25,16 @@ class dataset {
   virtual std::shared_ptr<SEP::hypercube> return_io_hyper() {
     return io->return_hyper();
   }
-  virtual unsigned char *get_char_data(std::shared_ptr<orient_cube> pos,
+  virtual std::shared_ptr<byteTensor2D> getCharData(std::shared_ptr<orient_cube> pos,
                                        int iax1, int f1, int e1, int iax2,
                                        int f2, int e2);
-  virtual unsigned char *get_char_data(std::shared_ptr<orient_cube> pos,
+  virtual  std::shared_ptr<byteTensor2D> getCharData(std::shared_ptr<orient_cube> pos,
                                        int iax1, int iax2, int n,
                                        long long *index);
-  virtual float *get_float_data(std::shared_ptr<orient_cube> pos, int iax1,
+  virtual std::shared_ptr<floatTensor2D> getFloatData(std::shared_ptr<orient_cube> pos, int iax1,
                                 int f1, int e1, int iax2, int f2, int e2);
   virtual float get_value(std::shared_ptr<orient_cube> pos);
-  // virtual std::vector<QStringList> get_header(
-  //    std::shared_ptr<orient_cube> pos) {
-  // long long inum = get_trace_num(pos);
-  // return io->get_header(inum);
-  //}
+ 
   virtual std::vector<std::string> return_header_keys() {
     return io->return_header_keys();
   }

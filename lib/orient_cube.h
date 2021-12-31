@@ -8,7 +8,8 @@
 #include "orientation_server.h"
 #include "position.h"
 #include "string.h"
-#include "long2DReg.h"
+#include "longTensor.h"
+#include "intTensor.h"
 #ifndef ORIENT_H
 #define ORIENT_H 1
 
@@ -65,7 +66,7 @@ class orient_cube : public position {
   void get_orders(int *ord) {
     for (int i = 0; i < 8; i++) ord[i] = order[i];
   }
-  void form_index_map(int iax1, int iax2, bool r1, bool r2);
+  void formIndexMap(int iax1, int iax2, bool r1, bool r2);
   void shift_data_image(int iax1, int iax2, float *locs) {
     int i3a = 0, i3b = 0;
     int imap = form_map_name(iax1, iax2, 0, &i3a, &i3b);
@@ -214,8 +215,7 @@ class orient_cube : public position {
   bool get_rotate() { return rotate; }
   int rot_ax[2];
   std::vector<SEP::axis> ax_rot;
-  int **rot_to_reg_1;
-  int **rot_to_reg_2;
+  std::shared_ptr<intTensor2D> rot_to_reg_1,rot_to_reg_2;
   std::string _name = std::string("none");
   std::map<int, std::shared_ptr<orient_map>> rot_maps;
   bool reverse[8];
@@ -232,7 +232,7 @@ class orient_cube : public position {
   float ang;
   float oversamp;
   int rot_pt[8];
-  int *begs, *ends;
+  std::vector<int> begs,ends;
   //  int  **map_1d;
   float rot_cen[2];
   bool rev1, rev2, init;

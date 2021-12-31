@@ -2,6 +2,8 @@
 #include <map>
 #include <vector>
 #include "axis.h"
+#include "longTensor.h"
+#include "intTensor.h"
 //#include "my_colors.h"
 #include "pick_new.h"
 #ifndef ORIENT_MAP_H
@@ -19,8 +21,8 @@ class pick_holder {
 class orient_map {
  public:
   orient_map(bool rot, int iax1, int iax2, int *rot_ax,
-             std::vector<SEP::axis> ax_rot, int **rot_to_reg_1,
-             int **rot_to_reg_2, int *beg, int *iloc, int *end, int *ns,
+             std::vector<SEP::axis> ax_rot, std::shared_ptr<intTensor2D> rot_to_reg_1,
+             std::shared_ptr<intTensor2D> rot_to_reg_2, int *beg, int *iloc, int *end, int *ns,
              bool r1, bool r2, std::vector<int> m1d, int sax, int bs, int es);
 
   void calc_get_pars(int iax1, int iax2, long long *j1, long long *j2,
@@ -31,15 +33,13 @@ class orient_map {
 
   std::map<long long, int> *return_samp_dat_map(int *n1);
   std::map<long long, int> sample_to_dat;
-  void form_index_map();
+  void formIndexMap();
   void find_loc(int *iloc, int id1, int id2);
-  std::shared_ptr<longTensor2D> get_index_map_ptr();
+  std::shared_ptr<longTensor2D> getIndexMapPtr();
   void orient_data_loc(int *cur, int *iloc);
   std::vector<int> return_picks_index(const std::string &col);
   std::map<long long, int> *get_map_to_index() { return &map_to_index; }
   ~orient_map() {
-    if (map != 0) delete[] map;
-    map = 0;
     picks.clear();
     map_to_index.clear();
   }
@@ -50,10 +50,10 @@ class orient_map {
   void rotation_to_grid_loc(int *loc);
   void shift_data_image(float *iloc);
   bool samp_exist;
-  long long *map;
+   std::shared_ptr<longTensor2D> map;
   std::map<long long, int> map_to_index;
   std::map<std::string, pick_holder> picks;
-  int **rot_to_reg_1, **rot_to_reg_2;
+  std::shared_ptr<intTensor2D> rot_to_reg_1, rot_to_reg_2;
   int beg[8], end[8], ns[8];
   SEP::axis ax_rot[2];
   int rot_ax[2];

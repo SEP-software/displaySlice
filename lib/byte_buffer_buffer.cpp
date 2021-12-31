@@ -1,10 +1,10 @@
 #include "byte_buffer_buffer.h"
-#include <stdlib.h>
-#include <iostream>
 #include "buffersRegFile.h"
 #include "byte2DReg.h"
 #include "fileIO.h"
 #include "simpleMemoryLimit.h"
+#include <iostream>
+#include <stdlib.h>
 using namespace SEP;
 // Initialize and read in buffer
 byte_buffer_buffer::byte_buffer_buffer(std::shared_ptr<paramObj> p,
@@ -37,13 +37,15 @@ byte_buffer_buffer::byte_buffer_buffer(std::shared_ptr<paramObj> p,
   _delta = (_maxV - _minV) / 255;
 }
 
-unsigned char *byte_buffer_buffer::get_char_data(int n, long long *index) {
+std::shared_ptr<byteTensor2D>
+byte_buffer_buffer::getCharData(std::shared_ptr<longTensor2d> index) {
   assert(1 == 2);
+  return nullptr;
 }
 
-unsigned char *byte_buffer_buffer::get_char_data(
-    std::shared_ptr<orient_cube> pos, int iax1, int f1, int e1, int iax2,
-    int f2, int e2) {
+std::shared_ptr<byteTensor2D>
+byte_buffer_buffer::getCharData(std::shared_ptr<orient_cube> pos, int iax1,
+                                int f1, int e1, int iax2, int f2, int e2) {
   std::vector<int> jw(_ndim, 1);
   std::vector<int> nw(_ndim, 1);
   std::vector<int> fw(_ndim, 1);
@@ -88,17 +90,18 @@ unsigned char *byte_buffer_buffer::get_char_data(
     j1 = 1;
     j2 = n1;
   }
-  std::shared_ptr<byte2DReg> flt(new byte2DReg(n1, n2));
+  std::shared_ptr<byteTensor2D> flt(new byteTensor2D(n1, n2));
   _file->readByteWindow(nw, fw, jw, (unsigned char *)flt->getVoidPtr());
   unsigned char *vals = flt->getVals();
-  unsigned char *out = new unsigned char[n1 * n2];
+  std::shared_ptr<byteTensor2D> out = std::make_shared(n1, n2);
+  auto outA = xt::view(out->mat, xt::all(), xt::all());
 
   int i = 0;
   int l2 = beg2;
   for (int i2 = 0; i2 < n2; i2++) {
     int l1 = beg1;
     for (int i1 = 0; i1 < n1; i1++, i++) {
-      out[i] = vals[l1 * j1 + l2 * j2];
+      outa(i2, i1) = vals[l1 * j1 + l2 * j2];
       l1 += delta1;
     }
     l2 += delta2;
@@ -107,9 +110,9 @@ unsigned char *byte_buffer_buffer::get_char_data(
   return out;
 }
 
-float *byte_buffer_buffer::get_float_data(std::shared_ptr<orient_cube> pos,
-                                          int iax1, int f1, int e1, int iax2,
-                                          int f2, int e2) {
+std::shared_ptr<floatTensor2D>
+byte_buffer_buffer::getFloatData(std::shared_ptr<orient_cube> pos, int iax1,
+                                 int f1, int e1, int iax2, int f2, int e2) {
   std::vector<int> jw(_ndim, 1);
   std::vector<int> nw(_ndim, 1);
   std::vector<int> fw(_ndim, 1);
@@ -157,7 +160,9 @@ float *byte_buffer_buffer::get_float_data(std::shared_ptr<orient_cube> pos,
   std::shared_ptr<byte2DReg> flt(new byte2DReg(n1, n2));
   _file->readByteWindow(nw, fw, jw, (unsigned char *)flt->getVoidPtr());
   unsigned char *vals = flt->getVals();
-  float *out = new float[n1 * n2];
+  std::shared_ptr<floatTensor2D> out = std::make_shared<floatTensor2D>(n1, n2);
+  auto outA = xt::view(out->mat, xt::all(), xt::all());
+
   float bclip, eclip;
   io->return_clips(&bclip, &eclip);
   float d = (eclip - bclip) / 256;
@@ -166,7 +171,7 @@ float *byte_buffer_buffer::get_float_data(std::shared_ptr<orient_cube> pos,
   for (int i2 = 0; i2 < n2; i2++) {
     int l1 = beg1;
     for (int i1 = 0; i1 < n1; i1++, i++) {
-      out[i] = bclip + d * vals[l1 * j1 + l2 * j2];
+      outA(i2, i1) = bclip + d * vals[l1 * j1 + l2 * j2];
       l1 += delta1;
     }
     l2 += delta2;
@@ -176,30 +181,9 @@ float *byte_buffer_buffer::get_float_data(std::shared_ptr<orient_cube> pos,
 }
 
 void byte_buffer_buffer::calc_histo() {
-  for (int i = 0; i < 256; i++) histo[i] = 0;
+  for (int i = 0; i < 256; i++)
+    histo[i] = 0;
 
-  /*
-  long long count[256];
-  for (int i = 0; i < 256; i++) count[i] = 0;
-  io->return_clips(&bclip, &eclip);
-  float j = eclip - bclip;
-  int b;
-  for (long long i = 0; i < n123_view; i++) {
-    b = (int)(255 * (fbuf[i] - bclip) / j + .5);
-    if (b < 0)
-      b = 0;
-    else if (b > 255)
-      b = 255;
-    count[b]++;
-  }
-  long long mym = 0;
-  for (int i = 0; i < 256; i++) {
-    if (count[i] > mym) mym = count[i];
-  }
-  for (int i = 0; i < 256; i++) {
-    histo[i] = (float)count[i] / (float)mym;
-  }
-  */
 }
 
 float byte_buffer_buffer::get_value(std::shared_ptr<orient_cube> pos) {

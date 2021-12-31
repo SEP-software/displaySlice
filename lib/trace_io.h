@@ -8,9 +8,8 @@
 namespace SEP {
 class trace_io : public io_func {
  public:
-  trace_io() { header_buf = 0; }
+  trace_io() { }
   ~trace_io() {
-    if (header_buf != 0) delete[] header_buf;
   }
 
   void read_block(int *nw, int *fw, unsigned char *buf, int nbytes);
@@ -25,7 +24,7 @@ class trace_io : public io_func {
   FILE *fd;
   std::shared_ptr<SEP::hypercube> des;
   std::shared_ptr<SEP::util> pars;
-  char *header_buf;
+  std::vector<char> header_buf;
   std::vector<std::string> headers;
   std::vector<int> hoff;
   bool loaded;

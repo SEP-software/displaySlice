@@ -18,16 +18,16 @@ void init_dataset(py::module &clsVector) {
            (std::shared_ptr<SEP::hypercube>(dataset::*)()) &
                dataset::return_io_hyper,
            "Make a copy of the vector")
-      .def("get_char_data",
-           (unsigned char *(dataset::*)(std::shared_ptr<orient_cube> pos, int,
+      .def("getCharData",
+           (std::shared_ptr<byteTensor2D> (dataset::*)(std::shared_ptr<orient_cube> pos, int,
                                         int, int, int, int, int)) &
-               dataset::get_char_data,
+               dataset::getCharData,
            "Get a byte slice of a dataset")
 
-      .def("get_float_data",
-           (unsigned char *(dataset::*)(std::shared_ptr<orient_cube> pos, int,
+      .def("getFloatData",
+           (std::shared_ptr<floatTensor2D> (dataset::*)(std::shared_ptr<orient_cube> pos, int,
                                         int, int, int, int, int)) &
-               dataset::get_float_data,
+               dataset::getFloatData,
            "Get a float slice of a dataset")
       .def("get_value",
            (float(dataset::*)(std::shared_ptr<orient_cube> pos )) &

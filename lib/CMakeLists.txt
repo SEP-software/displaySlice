@@ -10,16 +10,15 @@ autopick_2d.cpp
 auto_viteribi.cpp
 buffer.cpp
 #buffers_buffer.cpp
-buffers_data.cpp
-bufferNew.cpp
-byte_buffer_buffer.cpp
+#buffers_data.cpp
+#byte_buffer_buffer.cpp
 byte_buffer.cpp
 created_data.cpp
 dataset.cpp
 dynamic.cpp
 fastmarch.cpp
 fileIO.cpp
-float_buffer_buffer.cpp
+#float_buffer_buffer.cpp
 float_buffer.cpp
 incore_data.cpp
 io_func.cpp
@@ -41,7 +40,6 @@ position.cpp
 pqueue.cpp
 trace_io.cpp
 util.cpp
-vectorIO.cpp
 viterbi.cpp
 )
 
@@ -53,17 +51,16 @@ autopick_2d.h
 auto_viteribi.h
 bar_pt.h
 buffer.h
-bufferNew.h
 #buffers_buffer.h
-buffers_data.h
-byte_buffer_buffer.h
+#buffers_data.h
+#byte_buffer_buffer.h
 byte_buffer.h
 created_data.h
 dataset.h
 dynamic.h
 fastmarch.h
 fileIO.h
-float_buffer_buffer.h
+#float_buffer_buffer.h
 float_buffer.h
 incore_data.h
 io_func.h
@@ -86,7 +83,6 @@ position.h
 pqueue.h
 trace_io.h
 util.h
-vectorIO.h
 viterbi.h
 )
 

@@ -17,15 +17,16 @@ void trace_io::set_trace_basics(const std::string &fl,
   for (int i = 1; i < d->getNdim(); i++) {
     n = n * (long long)d->getAxis(i + 1).n;
   }
-  header_buf = new char[header * n];
+  header_buf = std::vector<char>(header * n);
 }
 void trace_io::read_block(int *nw, int *fw, unsigned char *buf, int nbytes) {
   // We are going to either trace by trace or slice by slice
 
   bool slice = false;
-  char *tbuf;
+  std::vector<char> tbuf;
   std::vector<axis> axes = hyper->getAxes();
-  for (int i = axes.size(); i < 8; i++) axes.push_back(axis(1));
+  for (int i = axes.size(); i < 8; i++)
+    axes.push_back(axis(1));
   bool first = false;
   long long block[8];
   block[0] = nbytes;
@@ -39,12 +40,13 @@ void trace_io::read_block(int *nw, int *fw, unsigned char *buf, int nbytes) {
   if (nw[1] == axes[1].n) {
     slice = true;
     nblock = nw[1] * (axes[0].n * nbytes + header);
-    tbuf = new char[nblock];
+    tbuf = std::vector<char>(nblock);
   } else {
     nblock = axes[0].n * nbytes + header;
-    tbuf = new char[nblock];
+    tbuf = std::vector<char>(nblock);
   }
-  if (nw[0] == axes[0].n) first = true;
+  if (nw[0] == axes[0].n)
+    first = true;
   int trlen = (axes[0].n * nbytes + header);
   loaded = true;
   long long to = 0;
@@ -65,7 +67,7 @@ void trace_io::read_block(int *nw, int *fw, unsigned char *buf, int nbytes) {
                 long long itr = s2 / (long long)block[1];
                 if (0 != fseek(fd, s2 + (long long)reel_head, 0))
                   par->error("trouble seeking");
-                int ierr = fread((void *)tbuf, 1, nblock, fd);
+                int ierr = fread((void *)&tbuf[0], 1, nblock, fd);
 
                 if (ierr != nblock) {
                   fprintf(stderr, "ERR %d %d\n", ierr, (int)nblock);
@@ -75,19 +77,20 @@ void trace_io::read_block(int *nw, int *fw, unsigned char *buf, int nbytes) {
                 for (int i1 = 0; i1 < nw[1]; i1++) {
                   if (first) {
                     memcpy((void *)(buf + to),
-                           (const void *)(tbuf + trlen * i1 + header),
+                           (const void *)(&tbuf [ trlen * i1 + header]),
                            nw[0] * nbytes);
-                    memcpy((void *)(header_buf + (itr + i1) * header),
-                           (const void *)(tbuf + trlen * i1), header);
+                    memcpy((void *)(&header_buf[0] + (itr + i1) * header),
+                           (const void *)(&tbuf [ trlen * i1
+                           ]), header);
                     to += nw[0] * nbytes;
                   } else {
                     for (int i0 = 0; i0 < nw[0]; i0++) {
                       memcpy((void *)(buf + to),
-                             (const void *)(tbuf + trlen * i2 + header +
-                                            (i0 + fw[0]) * nbytes),
+                             (const void *)(&tbuf [trlen * i2 + header+
+                                            (i0 + fw[0]) * nbytes]),
                              nbytes);
-                      memcpy((void *)(header_buf + (itr + i1) * header),
-                             (const void *)(tbuf + trlen * i1), header);
+                      memcpy((void *)(&header_buf[0] + (itr + i1) * header),
+                             (const void *)(&tbuf [trlen * i1]), header);
 
                       to += nbytes * nw[0];
                     }
@@ -99,25 +102,26 @@ void trace_io::read_block(int *nw, int *fw, unsigned char *buf, int nbytes) {
 
                   if (0 != fseek(fd, s1 + (long long)reel_head, 0))
                     par->error("trouble seeking");
-                  int ierr = (int)fread((void *)tbuf, 1, nblock, fd);
+                  int ierr = (int)fread((void *)tbuf[0], 1, nblock, fd);
                   long long itr = s1 / (long long)block[1];
 
-                  if (ierr != nblock) par->error("trouble reading");
+                  if (ierr != nblock)
+                    par->error("trouble reading");
                   if (first) {
-                    memcpy((void *)(buf + to), (const void *)(tbuf + header),
+                    memcpy((void *)(buf + to), (const void *)(&tbuf[header]),
                            nw[0] * nbytes);
-                    memcpy((void *)(header_buf + (itr)*header),
-                           (const void *)(tbuf), header);
+                    memcpy((void *)(&header_buf[0] + (itr)*header),
+                           (const void *)(&tbuf[0]), header);
 
                     to += nw[0] * nbytes;
                   } else {
                     for (int i0 = 0; i0 < nw[0]; i0++) {
                       memcpy(
                           (void *)(buf + to),
-                          (const void *)(tbuf + header + (i0 + fw[0]) * nbytes),
+                          (const void *)(&tbuf[header] + (i0 + fw[0]) * nbytes),
                           nbytes);
-                      memcpy((void *)(header_buf + (itr)*header),
-                             (const void *)(tbuf), header);
+                      memcpy((void *)(&header_buf[0] + (itr)*header),
+                             (const void *)(&tbuf[0]), header);
 
                       to += nbytes;
                     }
@@ -131,9 +135,8 @@ void trace_io::read_block(int *nw, int *fw, unsigned char *buf, int nbytes) {
     }
   }
 
-  delete[] tbuf;
   if (swap) {
-    pars->swap_float_bytes(ntot * nbytes / 4, (float *)buf);
+    pars->swapFloatBytes(ntot * nbytes / 4, (float*)buf);
   }
 }
 
@@ -142,9 +145,9 @@ void trace_io::read_block_float(int *nw, int *fw, float *buf) {
 }
 void trace_io::read_block_byte(int *nw, int *fw, unsigned char *buf) {
   long long n123 = 1;
-  for (int i = 0; i < 8; i++) n123 = n123 * (long long)nw[i];
-  float *tbuf = new float[n123];
-  read_block_float(nw, fw, tbuf);
-  par->convert_to_byte(tbuf, 0, buf, 0, n123, bclip, eclip);
-  delete[] tbuf;
+  for (int i = 0; i < 8; i++)
+    n123 = n123 * (long long)nw[i];
+  std::vector<float> tbuf(n123);
+  read_block_float(nw, fw, tbuf.data());
+  par->convert_to_byte(tbuf.data(), 0, buf, 0, n123, bclip, eclip);
 }

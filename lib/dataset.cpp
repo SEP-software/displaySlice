@@ -1,6 +1,7 @@
 #include "dataset.h"
 #include <stdlib.h>
-//#include <QFileInfo>
+#include <xtensor/xview.hpp>
+
 #include "math.h"
 using namespace SEP;
 
@@ -11,12 +12,13 @@ int dataset::check_load_buffer(std::shared_ptr<orient_cube> pos, const int iax1,
       return i;
     }
   }
-  if ((int)buf.size() == nmax_buf) delete_dataset(pos, iax1, iax2);
+  if ((int)buf.size() == nmax_buf)
+    delete_dataset(pos, iax1, iax2);
 
   buf.push_back(create_buffer(pos, iax1, iax2));
   return (int)buf.size() - 1;
 }
-void dataset::build_conv() {  // Handle
+void dataset::build_conv() { // Handle
   float bpct = 0., bclip = 1, epct, eclip, f;
   for (int ipt = 0; ipt < (int)clip.size(); ipt++) {
     epct = clip[ipt].pct * 255;
@@ -33,7 +35,8 @@ void dataset::build_conv() {  // Handle
   eclip = 254;
   for (int i = (int)(bpct + .5); i <= (int)(.5 + epct); i++) {
     f = ((float)i - bpct) / (epct - bpct);
-    if (epct - bpct < .001) f = 1.;
+    if (epct - bpct < .001)
+      f = 1.;
     conv[i] = (int)(((1. - f) * bclip + (f)*eclip) + .5);
   }
 }
@@ -46,10 +49,11 @@ void dataset::set_basics(const std::string &titl, const std::string &nm,
   }
 
   data_type = i->get_data_type();
-  //name = QFileInfo(QString::fromStdString(nm)).baseName().toStdString();
-  name= nm;
+  // name = QFileInfo(QString::fromStdString(nm)).baseName().toStdString();
+  name = nm;
   title = name;
-  if (title.length() < 2) title = nm;
+  if (title.length() < 2)
+    title = nm;
   if (title.length() < 20)
     title_short = title;
   else {
@@ -76,7 +80,8 @@ void dataset::set_basics(const std::string &titl, const std::string &nm,
     data_contains[i] = true;
     display_axis[i] = true;
   }
-  for (int i = 0; i < 5; i++) axes_display.push_back(-1);
+  for (int i = 0; i < 5; i++)
+    axes_display.push_back(-1);
 
   set_contains();
   bcolor = "none";
@@ -87,8 +92,8 @@ void dataset::set_basics(const std::string &titl, const std::string &nm,
   }
 }
 
-std::vector<float> dataset::return_axis_value(
-    int iax, std::vector<long long> positions) {
+std::vector<float>
+dataset::return_axis_value(int iax, std::vector<long long> positions) {
   std::vector<float> out;
   for (int i = 0; i < (int)positions.size(); i++)
     out.push_back(io->get_header_num(positions[i], axes_display[iax]));
@@ -96,7 +101,8 @@ std::vector<float> dataset::return_axis_value(
 }
 
 void dataset::set_display_axis(int iax, const std::string &x) {
-  if (x != "grid") axes_display[iax] = io->return_header_index(x);
+  if (x != "grid")
+    axes_display[iax] = io->return_header_index(x);
 }
 
 std::string dataset::return_axis_name(int iax) {
@@ -147,41 +153,48 @@ void dataset::set_contains() {
   }
 }
 
-unsigned char *dataset::get_char_data(std::shared_ptr<orient_cube> pos,
-                                      int iax1, int iax2, int n,
-                                      long long *index) {
+std::shared_ptr<byteTensor2D>
+dataset::getCharData(std::shared_ptr<orient_cube> pos, int iax1, int iax2,
+                     int n, long long *index) {
   std::vector<int> nloc = return_io_hyper()->getNs();
   int ibuf = check_load_buffer(pos, iax1, iax2);
-  unsigned char *cbuf =
-      buf[ibuf]->get_char_data(pos, iax1, 0, nloc[iax1], iax2, 0, nloc[iax2]);
+  std::shared_ptr<byteTensor2D> cbuf= buf[ibuf]->getCharData(pos, iax1, 0, nloc[iax1],
+                                                       iax2, 0, nloc[iax2]);
 
-  //   n,index);
+  std::vector<int> ns = cbuf->getHyper()->getNs();
+  auto bufA = xt::view(cbuf->mat, xt::all(), xt::all());
 
-  for (int i = 0; i < n; i++) {
-    cbuf[i] = conv[cbuf[i]];
-  }
-  return cbuf;
-}
-
-unsigned char *dataset::get_char_data(std::shared_ptr<orient_cube> pos,
-                                      int iax1, int f1, int e1, int iax2,
-                                      int f2, int e2) {
-  int ibuf = check_load_buffer(pos, iax1, iax2);
-
-  unsigned char *cbuf =
-      buf[ibuf]->get_char_data(pos, iax1, f1, e1, iax2, f2, e2);
-
-  for (int i = 0; i < abs((e1 - f1) * (e2 - f2)); i++) cbuf[i] = conv[cbuf[i]];
+  for (int i2 = 0; i2 < ns[1]; i2++)
+    for (int i1 = 0; i1 < ns[0] ; i1++)
+      bufA(i2, i1) = conv[bufA(i2, i1)];
 
   return cbuf;
 }
-float *dataset::get_float_data(std::shared_ptr<orient_cube> pos, int iax1,
-                               int f1, int e1, int iax2, int f2, int e2) {
+
+std::shared_ptr<byteTensor2D>
+dataset::getCharData(std::shared_ptr<orient_cube> pos, int iax1, int f1, int e1,
+                     int iax2, int f2, int e2) {
   int ibuf = check_load_buffer(pos, iax1, iax2);
-  return buf[ibuf]->get_float_data(pos, iax1, f1, e1, iax2, f2, e2);
+
+  std::shared_ptr<byteTensor2D> cbuf =
+      buf[ibuf]->getCharData(pos, iax1, f1, e1, iax2, f2, e2);
+  auto bufA = xt::view(cbuf->mat, xt::all(), xt::all());
+
+  for (int i2 = 0; i2 < abs(e1 - f1); i2++)
+    for (int i1 = 0 ; i1 < abs(e1 - f1); i1++)
+      bufA(i2, i1) = conv[bufA(i2, i1)];
+
+  return cbuf;
+}
+std::shared_ptr<floatTensor2D>
+      dataset::getFloatData(std::shared_ptr<orient_cube> pos, int iax1, int f1,
+                            int e1, int iax2, int f2, int e2) {
+  int ibuf = check_load_buffer(pos, iax1, iax2);
+  return buf[ibuf]->getFloatData(pos, iax1, f1, e1, iax2, f2, e2);
 }
 float dataset::get_value(std::shared_ptr<orient_cube> pos) {
-  if ((int)buf.size() == 0) return 0.;
+  if ((int)buf.size() == 0)
+    return 0.;
 
   int ibuf = find_buffer(pos);
   return buf[ibuf]->get_value(pos);
@@ -201,10 +214,13 @@ long long dataset::get_trace_num(std::shared_ptr<orient_cube> pos) {
   return ret;
 }
 void dataset::snap_location(float *floc, int single, const std::string &stype) {
-  if ((int)buf.size() == 0) return;
-  if (stype == "no") return;
+  if ((int)buf.size() == 0)
+    return;
+  if (stype == "no")
+    return;
   std::shared_ptr<orient_cube> pos(new orient_cube(grid));
-  for (int i = 0; i < 8; i++) pos->set_pos(i, floc[i]);
+  for (int i = 0; i < 8; i++)
+    pos->set_pos(i, floc[i]);
 
   int ibuf = find_buffer(pos);
   int ilocs[8];
@@ -239,7 +255,6 @@ void dataset::delete_dataset(std::shared_ptr<orient_cube> pos, const int iax1,
   if (pos == 0 || iax1 == 0 || iax2 == 0) {
     ;
   }
-  // delete buf[0];
   buf.erase(buf.begin());
 }
 int dataset::find_buffer(std::shared_ptr<orient_cube> pos) {
@@ -256,7 +271,8 @@ int dataset::find_buffer(std::shared_ptr<orient_cube> pos) {
 }
 std::string dataset::return_clip() {
   std::string buf;
-  if (clip.size() == 0) return "";
+  if (clip.size() == 0)
+    return "";
   buf = std::to_string(clip[0].pct) + ":" + std::to_string(clip[0].clip);
   for (int i = 1; i < (int)clip.size(); i++) {
     buf = buf + ":" + std::to_string(clip[i].pct) + ":" +
@@ -266,17 +282,17 @@ std::string dataset::return_clip() {
 }
 std::string dataset::return_histogram() {
   std::string b;
-  float *histo;
+  std::vector<float> histo;
   if ((int)buf.size() == 0) {
-    histo = new float[256];
-    for (int i = 0; i < 256; i++) histo[i] = 0.;
+    histo = std::vector<float>(256);
+    for (int i = 0; i < 256; i++)
+      histo[i] = 0.;
   } else
-    histo = buf[0]->return_histo();
+    histo = buf[0]->returnHisto();
   b = std::to_string(histo[0]);
   for (int i = 1; i < 256; i++) {
     b = b + ":" + std::to_string(histo[i]);
   }
-  delete[] histo;
   return b;
 }
 void dataset::get_pt(int ipt, float *pct, float *clp) {
@@ -285,7 +301,8 @@ void dataset::get_pt(int ipt, float *pct, float *clp) {
 }
 void dataset::del_pt(int ipt) {
   if (clip.size() > 1) {
-    for (int i = ipt; i < (int)clip.size() - 1; i++) clip[i] = clip[i + 1];
+    for (int i = ipt; i < (int)clip.size() - 1; i++)
+      clip[i] = clip[i + 1];
     clip.pop_back();
   } else
     clip.clear();
@@ -308,7 +325,8 @@ int dataset::add_pt(float pct, float clp) {
 
     } else {
       for (int i = 0; i < (int)clip.size() - 1; i++) {
-        if (pct > clip[i].pct && pct <= clip[i + 1].pct) iin = i + 1;
+        if (pct > clip[i].pct && pct <= clip[i + 1].pct)
+          iin = i + 1;
       }
     }
 
@@ -348,7 +366,8 @@ std::string dataset::validate_view(const std::string &nm,
 
   // See if requested view works
   if (nm == "CUBE" || nm == "CUT" || nm == "THREE" || nm == "MULTI") {
-    if (valid[0] && valid[1] && valid[2]) return nm;
+    if (valid[0] && valid[1] && valid[2])
+      return nm;
   } else {
     if (nm == "FRONT" && valid[0] && valid[1])
       return nm;
@@ -364,7 +383,8 @@ std::string dataset::validate_view(const std::string &nm,
     else if (valid[2])
       return "SIDE";
   }
-  if (valid[1] && valid[2]) return "TOP";
+  if (valid[1] && valid[2])
+    return "TOP";
   // At this stage just find the first two valid axes
   int iv1 = -1, iv2 = -1;
   for (int i = 0; i < 8; i++) {
@@ -383,7 +403,8 @@ std::string dataset::validate_view(const std::string &nm,
   iold = order[1];
   order[1] = iv2;
   order[iv2] = iold;
-  for (int i = 0; i < 8; i++) order[i] = order[i] + 1;
+  for (int i = 0; i < 8; i++)
+    order[i] = order[i] + 1;
 
   pos->set_orders(order);
 
@@ -391,6 +412,7 @@ std::string dataset::validate_view(const std::string &nm,
 }
 
 bool dataset::valid_display(int iax, int *order, std::vector<int> ns) {
-  if (ns[order[iax]] > 1 && display_axis[order[iax]]) return true;
+  if (ns[order[iax]] > 1 && display_axis[order[iax]])
+    return true;
   return false;
 }

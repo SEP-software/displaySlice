@@ -44,8 +44,8 @@ float *util::float_array_from_string(const std::string &str) {
   return buf;
 }
 
-void util::set_float_clip(float *buf, int inum, long long nelem, float *bc,
-                          float *ec, int swap) {
+void util::setFloatClip(float *buf, int inum, long long nelem, float &bc,
+                          float &ec, int swap) {
   float bclip, eclip, clip, bpclip, epclip, pclip, minv, maxv;
 
   bclip = par->getFloat(std::string("bclip") + std::to_string(inum), -98765.);
@@ -74,29 +74,27 @@ void util::set_float_clip(float *buf, int inum, long long nelem, float *bc,
       j = sub * j;
       nsmall = nsmall / sub;
     }
-
-    float *tempf = new float[nsmall];
+    std::vector<float> tempf(nsmall);
     int ii = 0, i = 0;
     for (i = 0; i < nelem && ii < nsmall; i += j, ii++) tempf[ii] = buf[i];
     //    memcpy((void*)tempf,(const void*) buf,sizeof(float)*nelem);
 
-    if (swap == 1) swap_float_bytes(nsmall, tempf);
+    if (swap == 1) swapFloatBytes(nsmall, &tempf[0]);
     if (bpclip != -1 || epclip != -1) {
       if (bpclip == -1) bpclip = 0;
       if (epclip == -1) epclip = 100;
-      minv = p.find(tempf, nelem, ((int)(nsmall * (float)(bpclip / 100.))));
-      maxv = p.find(tempf, nelem, ((int)(nsmall * (float)(epclip / 100.))));
+      minv = p.find(tempf.data(), nelem, ((int)(nsmall * (float)(bpclip / 100.))));
+      maxv = p.find(tempf.data(), nelem, ((int)(nsmall * (float)(epclip / 100.))));
     } else {
       if (pclip == -1.) pclip = 99;
       int pos = (int)nsmall * (float)(pclip / 100.);
       if (pos >= nsmall) pos = nsmall - 1;
-      maxv = p.find_abs(tempf, nsmall, pos);
+      maxv = p.find_abs(tempf.data(), nsmall, pos);
       minv = -maxv;
     }
-    delete[] tempf;
   }
-  *bc = minv;
-  *ec = maxv;
+  bc = minv;
+  ec = maxv;
 }
 
 void util::convert_to_byte(float *fbuf, long long foff, unsigned char *cbuf,
@@ -112,7 +110,7 @@ void util::convert_to_byte(float *fbuf, long long foff, unsigned char *cbuf,
     cbuf[i + coff] = j;
   }
 }
-void util::swap_float_bytes(const int n, float *buf) {
+void util::swapFloatBytes(const int n, float *buf) {
   // int *tni4;
   for (int i = 0; i < n; i++) {
     float *tnf4 = &buf[i];

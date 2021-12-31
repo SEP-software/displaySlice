@@ -27,7 +27,7 @@ class io_func {
   bool not_byte() { return non_byte; }
   bool io_changed() { return changed; }
   void set_clip(float *dat, int inum, long long nelem, int swap = 0) {
-    par->set_float_clip(dat, inum, nelem, &bclip, &eclip, swap);
+    par->setFloatClip(dat, inum, nelem, bclip, eclip, swap);
   }
 
   void convert_to_byte(float *flt, long long foff, unsigned char *tbuf,

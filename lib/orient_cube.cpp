@@ -1,8 +1,10 @@
 #include "orient_cube.h"
 #include <assert.h>
-#include <math.h>
 #include <iostream>
+#include <math.h>
 #include <utility>
+#include <xtensor/xview.hpp>
+
 using namespace SEP;
 orient_cube::orient_cube(std::shared_ptr<position> pos, std::vector<int> o,
                          std::shared_ptr<orientation_server> s) {
@@ -13,12 +15,10 @@ orient_cube::orient_cube(std::shared_ptr<position> pos, std::vector<int> o,
     this->set_axis(i, pos->getAxis(i));
     order[i] = o[i] - 1;
     reverse[i] = false;
-    if (i > 0) block[i] = block[i - 1] * getAxis(i - 1).n;
+    if (i > 0)
+      block[i] = block[i - 1] * getAxis(i - 1).n;
   }
-  // reg_to_rot_1=0;
-  rot_to_reg_1 = 0;
-  //  reg_to_rot_2=0;
-  rot_to_reg_2 = 0;
+
   serv = s;
   rot_ax[0] = 1;
   rot_ax[1] = 2;
@@ -48,19 +48,19 @@ orient_cube::orient_cube(std::shared_ptr<hypercube> h,
   for (int i = 0; i < 8; i++) {
     axis a = h->getAxis(i + 1);
     this->set_axis(i, a);
-    if (i > 0) block[i] = block[i - 1] * getAxis(i - 1).n;
+    if (i > 0)
+      block[i] = block[i - 1] * getAxis(i - 1).n;
     this->order[i] = i;
     this->reverse[i] = false;
     this->beg[i] = 0;
     this->end[i] = a.n;
-    if (i == 0) ax_rot.push_back(a);
-    if (i == 1) ax_rot.push_back(a);
+    if (i == 0)
+      ax_rot.push_back(a);
+    if (i == 1)
+      ax_rot.push_back(a);
   }
 
-  //  reg_to_rot_1=0;
-  rot_to_reg_1 = 0;
-  //    reg_to_rot_2=0;
-  rot_to_reg_2 = 0;
+
   set_no_rotate();
   get_locs(rot_pt);
   init_map_1d();
@@ -84,10 +84,7 @@ orient_cube::orient_cube(std::shared_ptr<orient_cube> ori) {
   serv = ori->serv;
   orient_num = serv->get_new_num();
 
-  //  reg_to_rot_1=0;
-  rot_to_reg_1 = 0;
-  //   reg_to_rot_2=0;
-  rot_to_reg_2 = 0;
+
   rotate = false;
   this->ang = ori->get_rot_angle();
   ax_rot[0] = ori->ax_rot[0];
@@ -113,11 +110,11 @@ void orient_cube::init_map_1d() {
     // for(int j=0; j <ns[i]; j++){
     //  map_1d[i][j]=j;
     // }
-    if (i != 0) blocks[i] = blocks[i - 1] * ns[i - 1];
+    if (i != 0)
+      blocks[i] = blocks[i - 1] * ns[i - 1];
   }
   n123 = blocks[7] * ns[7];
-  begs = 0;
-  ends = 0;
+
   shift_ax = -1;
   oversamp = 1.;
 }
@@ -150,11 +147,11 @@ int orient_cube::form_map_name(int iax1, int iax2, int idelta, int *i3,
   // fprintf(stderr,"GOOG %d \n",(*i3v)*100+iax1+iax2*10);
   return (*i3v) * 100 + iax1 + iax2 * 10;
 }
-void orient_cube::form_index_map(int iax1, int iax2, bool rev1, bool rev2) {
+void orient_cube::formIndexMap(int iax1, int iax2, bool rev1, bool rev2) {
   int i3a = 0, i3v = 0;
   int ibig = form_map_name(iax1, iax2, 0, &i3a, &i3v);
 
-  if (rot_maps.count(ibig) == 0) {  // need to create map
+  if (rot_maps.count(ibig) == 0) { // need to create map
     int ns[8], bs[8], es[8], iloc[8];
     get_ns(ns);
     get_begs(bs);
@@ -185,8 +182,10 @@ void orient_cube::get_viewed_locs(int iax1, int iax2, int *iloc) {
     iloc[shift_ax] = one_shift[hsh];
   }
 }
-std::shared_ptr<longTensor2D>orient_cube::getIndexMapPtr(int iax1, int iax2, int f1, int e1,
-                                          int f2, int e2, int ioff) {
+std::shared_ptr<longTensor2D> orient_cube::getIndexMapPtr(int iax1, int iax2,
+                                                          int f1, int e1,
+                                                          int f2, int e2,
+                                                          int ioff) {
   int i3a, i3v;
   int ibig = form_map_name(iax1, iax2, ioff, &i3a, &i3v);
 
@@ -247,7 +246,6 @@ std::shared_ptr<longTensor2D>orient_cube::getIndexMapPtr(int iax1, int iax2, int
         bs, iloc, es, ns, rev1, rev2, one_shift, shift_ax, b_s, e_s));
     update_map_order(ibig, true);
 
-
     return rot_maps[ibig]->getIndexMapPtr();
   }
 }
@@ -255,7 +253,8 @@ void orient_cube::update_map_order(int big, bool newo) {
   if (!newo) {
     std::list<int>::iterator it1;
     it1 = map_order.begin();
-    while (*it1 != big) it1++;
+    while (*it1 != big)
+      it1++;
     map_order.erase(it1);
   }
   map_order.insert(map_order.begin(), big);
@@ -294,7 +293,7 @@ void orient_cube::return_grid_loc(float *p, int *iloc, float oversamp) {
   }
   if (one_shift.size() > 0) {
     iloc[0] = 0;
-    ;  // implicit 0 axis assumption
+    ; // implicit 0 axis assumption
     long long hsh;
     loc_to_index(iloc, &hsh);
     axis a = getAxis(0);
@@ -315,14 +314,7 @@ void orient_cube::return_grid_loc(float *p, int *iloc, float oversamp) {
 }
 void orient_cube::set_no_shift() {
   one_shift.resize(0);
-  if (begs != 0) {
-    delete[] begs;
-    begs = 0;
-  }
-  if (ends != 0) {
-    delete[] ends;
-    ends = 0;
-  }
+
   shift_ax = -1;
 }
 void orient_cube::set_one_shift(int iax, float ov, std::vector<int> buf) {
@@ -330,8 +322,8 @@ void orient_cube::set_one_shift(int iax, float ov, std::vector<int> buf) {
   one_shift = buf;
   shift_ax = iax;
   int n = getAxis(shift_ax).n;
-  begs = new int[n];
-  ends = new int[n];
+  std::vector<int> begs(n),ends(n);
+
   oversamp = ov;
   // fprintf(stderr,"correct n? %d \n",n);
   for (int i = 0; i < n; i++) {
@@ -376,15 +368,19 @@ void orient_cube::set_one_shift(int iax, float ov, std::vector<int> buf) {
   // Figure
 
   int j = n - 1;
-  while (begs[j] > 0 && j > 0) j--;
+  while (begs[j] > 0 && j > 0)
+    j--;
   if (j != 0) {
-    for (int i1 = 0; i1 < j; i1++) begs[i1] = 0;
+    for (int i1 = 0; i1 < j; i1++)
+      begs[i1] = 0;
   }
 
   j = 0;
-  while (ends[j] != n - 1 && j < n - 1) j++;
+  while (ends[j] != n - 1 && j < n - 1)
+    j++;
   if (j != n - 1) {
-    for (int i1 = j; i1 < n; i1++) ends[i1] = n - 1;
+    for (int i1 = j; i1 < n; i1++)
+      ends[i1] = n - 1;
   }
   // IF there is only a single time slice with this tau value expand it by 1 on
   // each side
@@ -399,25 +395,11 @@ void orient_cube::set_one_shift(int iax, float ov, std::vector<int> buf) {
   }
 }
 void orient_cube::delete_all() {
-  // for(int i=0; i < 8; i++){
-  //  delete [] map_1d[i];
-  // }
-  // delete [] map_1d;
-  if (begs != 0) delete[] begs;
-  if (ends != 0) delete[] ends;
+
   delete_maps();
 }
 void orient_cube::delete_maps() {
-  if (rot_to_reg_1 != 0) {
-    for (int i2 = 0; i2 < ax_rot[1].n; i2++) {
-      delete[] rot_to_reg_1[i2];
-      delete[] rot_to_reg_2[i2];
-    }
-    delete[] rot_to_reg_1;
-    rot_to_reg_1 = 0;
-    delete[] rot_to_reg_2;
-    rot_to_reg_2 = 0;
-  }
+
 
   rotation_change();
 }
@@ -427,7 +409,8 @@ axis orient_cube::get_rot_axis(int iax) {
     //  \n",iax,rot_ax[0],rot_ax[1]);
     return getAxis(iax);
   }
-  if (rot_ax[0] == iax) return ax_rot[0];
+  if (rot_ax[0] == iax)
+    return ax_rot[0];
   return ax_rot[1];
 }
 
@@ -454,33 +437,37 @@ void orient_cube::form_maps() {
 
   //   float *buf=new float[a1.n*a2.n*2];
   float cs = cos(ang), sn = sin(ang);
-  rot_to_reg_1 = new int *[ax_rot[1].n];
-  rot_to_reg_2 = new int *[ax_rot[1].n];
+  rot_to_reg_1=std::make_shared<intTensor2D> (ax_rot[0].n,ax_rot[1].n);
+    rot_to_reg_2=std::make_shared<intTensor2D> (ax_rot[0].n,ax_rot[1].n);
+
+  auto rot1 = xt::view(rot_to_reg_1->mat, xt::all(), xt::all());
+  auto rot2 = xt::view(rot_to_reg_2->mat, xt::all(), xt::all());
+
+
   cs = cos(-ang);
   sn = sin(-ang);
   int i = 0;
   for (int i2 = 0; i2 < ax_rot[1].n; i2++) {
-    rot_to_reg_1[i2] = new int[ax_rot[0].n];
-    rot_to_reg_2[i2] = new int[ax_rot[0].n];
+
     float p2 = ax_rot[1].o + ax_rot[1].d * i2;
     float p1 = ax_rot[0].o;
     for (int i1 = 0; i1 < ax_rot[0].n; i1++, i++) {
-      rot_to_reg_1[i2][i1] = (int)((((p1 - rot_cen[0]) * cs +
+      rot1(i2,i1) = (int)((((p1 - rot_cen[0]) * cs +
                                      sn * (p2 - rot_cen[1]) + rot_cen[0]) -
                                     a1.o) /
                                        a1.d +
                                    .5);
-      rot_to_reg_2[i2][i1] = (int)(((-(p1 - rot_cen[0]) * sn +
+      rot2(i2,i1)= (int)(((-(p1 - rot_cen[0]) * sn +
                                      cs * (p2 - rot_cen[1]) + rot_cen[1]) -
                                     a2.o) /
                                        a2.d +
                                    .5);
       p1 += ax_rot[0].d;
 
-      if (rot_to_reg_2[i2][i1] < 0 || rot_to_reg_2[i2][i1] >= a2.n ||
-          rot_to_reg_1[i2][i1] < 0 || rot_to_reg_1[i2][i1] >= a1.n) {
-        rot_to_reg_1[i2][i1] = -1;
-        rot_to_reg_2[i2][i1] = -1;
+      if (rot2(i2,i1)< 0 || rot2(i2,i1) >= a2.n ||
+         rot1(i2,i1) < 0 || rot1(i2,i1) >= a1.n) {
+        rot2(i2,i1) = -1;
+       rot1(i2,i1) = -1;
       }
     }
   }
@@ -497,7 +484,8 @@ void orient_cube::set_rot_axes(int a1, int a2) {
   set_rotation();
 }
 void orient_cube::set_no_rotate() {
-  if (ang == 0) return;
+  if (ang == 0)
+    return;
   ang = 0;
   rotate = false;
   delete_maps();
@@ -566,11 +554,13 @@ void orient_cube::update_extents() {
     e_rot[0] = 0;
     b_rot[1] = ax_rot[1].n;
     e_rot[1] = 0;
+  auto rot1 = xt::view(rot_to_reg_1->mat, xt::all(), xt::all());
+  auto rot2 = xt::view(rot_to_reg_2->mat, xt::all(), xt::all());
 
     for (int i2 = 0; i2 < ax_rot[1].n; i2++) {
       for (int i1 = 0; i1 < ax_rot[0].n; i1++) {
-        if (rot_to_reg_1[i2][i1] >= b1 && rot_to_reg_1[i2][i1] < e1 &&
-            rot_to_reg_2[i2][i1] >= b2 && rot_to_reg_2[i2][i1] < e2) {
+        if (rot1(i2,i1) >= b1 &&rot1(i2,i1) < e1 &&
+            rot2(i2,i1) >= b2 && rot2(i2,i1) < e2) {
           b_rot[0] = std::min(b_rot[0], i1);
           b_rot[1] = std::min(b_rot[1], i2);
           e_rot[0] = std::max(e_rot[0], i1);
@@ -601,7 +591,8 @@ void orient_cube::load_map_1d() {
   get_ns(ns);
   long long base = 0;
   for (int i = 0; i < 8; i++) {
-    if (i != shift_ax) base += blocks[i] * iloc[i];
+    if (i != shift_ax)
+      base += blocks[i] * iloc[i];
   }
   for (int i = 0; i < ns[shift_ax]; i++) {
     //  map_1d[shift_ax][i]=one_shift[base+(long long) blocks[shift_ax] *i];
