@@ -73,7 +73,7 @@ endif(BUILD_TEST)
 
 add_subdirectory(external/genericIO)
 add_subdirectory(lib)
-#add_subdirectory(python)
+add_subdirectory(python)
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
   displaySliceConfig.cmake.in

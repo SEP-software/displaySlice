@@ -11,6 +11,7 @@ auto_viteribi.cpp
 buffer.cpp
 #buffers_buffer.cpp
 buffers_data.cpp
+bufferNew.cpp
 byte_buffer_buffer.cpp
 byte_buffer.cpp
 created_data.cpp
@@ -40,6 +41,7 @@ position.cpp
 pqueue.cpp
 trace_io.cpp
 util.cpp
+vectorIO.cpp
 viterbi.cpp
 )
 
@@ -51,6 +53,7 @@ autopick_2d.h
 auto_viteribi.h
 bar_pt.h
 buffer.h
+bufferNew.h
 #buffers_buffer.h
 buffers_data.h
 byte_buffer_buffer.h
@@ -83,6 +86,7 @@ position.h
 pqueue.h
 trace_io.h
 util.h
+vectorIO.h
 viterbi.h
 )
 

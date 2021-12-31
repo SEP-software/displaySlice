@@ -5,14 +5,7 @@
 #include "orient_cube.h"
 #include "util.h"
 namespace SEP{
-class io_store{
-  public:
-  io_store(int *f){
-    for(int i=0; i<8; i++) fs.push_back(f[i]);
-  }
-  std::vector<int> fs;
 
-};
 class buffer{
 
   public:

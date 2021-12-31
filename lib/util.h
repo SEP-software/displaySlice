@@ -20,6 +20,7 @@ class clips {
 
 class util {
  public:
+  util(){;}
   util(std::shared_ptr<SEP::paramObj> pars) { par = pars; }
   static std::string string_from_int_array(const int n, const int *ar);
   static std::string string_from_float_array(const int n, const float *ar);

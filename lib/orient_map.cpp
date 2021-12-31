@@ -70,8 +70,8 @@ void pick_holder::del_pick(long long index) {
   }
   hash.erase(i);
 }
-long long *orient_map::get_index_map_ptr() {
-  if (map == 0) form_index_map();
+std:shared_ptr<longTensor2D> orient_map::getIndexMapPtr() {
+  if (map == nullptr) form_index_map();
   return map;
 }
 std::map<long long, int> *orient_map::return_samp_dat_map(int *n) {

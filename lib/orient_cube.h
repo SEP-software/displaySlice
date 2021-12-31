@@ -8,6 +8,7 @@
 #include "orientation_server.h"
 #include "position.h"
 #include "string.h"
+#include "long2DReg.h"
 #ifndef ORIENT_H
 #define ORIENT_H 1
 
@@ -71,14 +72,16 @@ class orient_cube : public position {
     assert(rot_maps.count(imap) == 1);
     rot_maps[form_map_name(iax1, iax2, 0, &i3a, &i3b)]->shift_data_image(locs);
   }
-  long long *get_index_map_ptr(int iax1, int iax2, int delta, int *n) {
+  std::shared_ptr<longTensor2D> getIndexMapPtr(int iax1, int iax2, int delta, int *n) {
     int f1 = get_beg(iax1), e1 = get_end(iax1), f2 = get_beg(iax2),
         e2 = get_end(iax2);
+    
     *n = (e1 - f1) * (e2 - f2);
-    return get_index_map_ptr(iax1, iax2, f1, e1, f2, e2, delta);
+    return  getIndexMapPtr(iax1,iax2,f1,e1,f2,e2,delta);
+    
   }
 
-  long long *get_index_map_ptr(int iax1, int iax2, int f1, int e1, int f2,
+   std::shared_ptr<longTensor2D> getIndexMapPtr(int iax1, int iax2, int f1, int e1, int f2,
                                int e2, int ioff);
   int form_map_name(int iax1, int iax2, int idelta, int *i3a, int *i3v);
   float get_rot_angle() { return ang * 45 / atan(1.); }

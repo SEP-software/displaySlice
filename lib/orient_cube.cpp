@@ -185,7 +185,7 @@ void orient_cube::get_viewed_locs(int iax1, int iax2, int *iloc) {
     iloc[shift_ax] = one_shift[hsh];
   }
 }
-long long *orient_cube::get_index_map_ptr(int iax1, int iax2, int f1, int e1,
+std::shared_ptr<longTensor2D>orient_cube::getIndexMapPtr(int iax1, int iax2, int f1, int e1,
                                           int f2, int e2, int ioff) {
   int i3a, i3v;
   int ibig = form_map_name(iax1, iax2, ioff, &i3a, &i3v);
@@ -220,7 +220,7 @@ long long *orient_cube::get_index_map_ptr(int iax1, int iax2, int f1, int e1,
   }
   if (found) {
     update_map_order(ibig, false);
-    return rot_maps[ibig]->get_index_map_ptr();
+    return rot_maps[ibig]->getIndexMapPtr();
   } else {
     int ns[8], bs[8], es[8], iloc[8];
     get_ns(ns);
@@ -247,9 +247,8 @@ long long *orient_cube::get_index_map_ptr(int iax1, int iax2, int f1, int e1,
         bs, iloc, es, ns, rev1, rev2, one_shift, shift_ax, b_s, e_s));
     update_map_order(ibig, true);
 
-    long long *tmp = rot_maps[ibig]->get_index_map_ptr();
 
-    return tmp;
+    return rot_maps[ibig]->getIndexMapPtr();
   }
 }
 void orient_cube::update_map_order(int big, bool newo) {

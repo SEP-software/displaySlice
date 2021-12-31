@@ -33,7 +33,7 @@ class orient_map {
   std::map<long long, int> sample_to_dat;
   void form_index_map();
   void find_loc(int *iloc, int id1, int id2);
-  long long *get_index_map_ptr();
+  std::shared_ptr<longTensor2D> get_index_map_ptr();
   void orient_data_loc(int *cur, int *iloc);
   std::vector<int> return_picks_index(const std::string &col);
   std::map<long long, int> *get_map_to_index() { return &map_to_index; }

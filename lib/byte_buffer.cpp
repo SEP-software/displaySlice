@@ -43,7 +43,6 @@ std::vector<int> &nwio,std::vector<int> &fwio, int ndim ,std::vector<int> &nloop
   // unsigned char *tbuf=new unsigned char [nblock];
    int iread=0;
    std::vector<int> fsend(8,0); ;fsend[0]=fwbuf[0];        fsend[1]=fwio[1];
-   std::vector<io_store> fsave;
    for(int i7=0; i7 < nloop[7];i7++){     fsend[7]=fwio[7]+i7;
     for(int i6=0; i6 < nloop[6];i6++){   fsend[6]=fwio[6]+i6;
      for(int i5=0; i5 < nloop[5];i5++){   fsend[5]=fwio[5]+i5;
@@ -104,15 +103,8 @@ int e1,
       pos->set_no_rotate();
    }
    int n1=abs(e1-f1), n2=abs(e2-f2);
-   long long *index=pos->get_index_map_ptr(iax1,iax2,f1,e1,f2,e2,0);
-   if(iax1==0 && iax2==1){
-     int i=0;
-     for(int i2=f2; i2 < e2; i2++){
-       for(int i1=f1; i1 < e1; i1++,i++){
-        // fprintf(stderr,"map setup %d %d %d %d\n",i1,i2,index[i]%194,index[i]/194-28*292);
-       }
-    }
-  }
+   std::shared_ptr<longTensor2D>index=pos->getIndexMapPtr(iax1,iax2,f1,e1,f2,e2,0);
+ 
      
    unsigned char *out=get_char_data(pos,n1*n2,index);
    
@@ -151,7 +143,7 @@ float *byte_buffer::get_float_data(std::shared_ptr<orient_cube>pos, int iax1, in
       pos->set_no_rotate();
    }
    int n1=abs(e1-f1), n2=abs(e2-f2);
-   long long *index=pos->get_index_map_ptr(iax1,iax2,f1,e1,f2,e2,0);
+   std::shared_ptr<longTensor2D>index=pos->getIndexMapPtr(iax1,iax2,f1,e1,f2,e2,0);
    float *out=get_float_data(n1*n2,index);
    return out;
    
