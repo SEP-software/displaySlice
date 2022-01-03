@@ -27,15 +27,15 @@ void pairs_new::info(char *str, int i) {
 }
 void pairs_new::sort1() { std::sort(vals.begin(), vals.end(), compx); }
 void pairs_new::sort2() { std::sort(vals.begin(), vals.end(), compy); }
-void pairs_new::build_int_line(int f, int n, float *ar) {
+void pairs_new::buildIntLine(int f, std::vector<float> ar) {
   int i2, i;
   // isort-->y
   // isingle-->x
 
   int ifirst = 9999, ilast = -1, i1;
-  for (i = 0; i < n; i++) ar[i] = -1;
+  for (i = 0; i < ar.size(); i++) ar[i] = -1;
 
-  for (i = 0; i < size(); i++) {
+  for (i = 0; i < ar.size(); i++) {
     i1 = vals[i].y - f;
     i2 = vals[i].x;
     ar[i1] = i2;
@@ -45,11 +45,11 @@ void pairs_new::build_int_line(int f, int n, float *ar) {
   }
   if (ilast != -1) {
     for (i = 0; i < ifirst; i++) ar[i] = ar[ifirst];
-    for (i = ilast; i < n; i++) ar[i] = ar[ilast];
+    for (i = ilast; i < ar.size(); i++) ar[i] = ar[ilast];
     i = 0;
     float f;
     int beg = ifirst;
-    while (i < n - 1) {
+    while (i < ar.size() - 1) {
       i = beg + 1;
       while (ar[i] < 0.) i++;
       for (int j = beg + 1; j < i; j++) {
@@ -58,7 +58,7 @@ void pairs_new::build_int_line(int f, int n, float *ar) {
         //   fprintf(stderr,"making my list %d %f \n",j,ar[j]);
       }
       beg = i;
-      if (beg == ilast) i = n;
+      if (beg == ilast) i = ar.size();
     }
   }
 }
