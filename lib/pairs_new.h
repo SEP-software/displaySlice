@@ -26,7 +26,7 @@ class pairs_new {
   void clear() { vals.clear(); }
   void info(char *str, int n);
   int size() { return (int)vals.size(); }
-  void buildIntLine(int f, std::vector<float> ar);
+  void build_int_line(int f, int n, float *ar);
   std::vector<pair_new> vals;
 };
 }  // namespace SEP
