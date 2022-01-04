@@ -88,7 +88,7 @@ viterbi.h
 
 
 add_library(displaySlice  SHARED ${SOURCES} ${INCLUDES})
-target_link_libraries(displaySlice genericCpp)
+target_link_libraries(displaySlice genericCpp  ${EXTERNAL_TARGETS})
 
 target_include_directories(
   displaySlice
