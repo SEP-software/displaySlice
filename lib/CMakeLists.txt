@@ -99,6 +99,7 @@ target_include_directories(
 
 
  install(
+	 TARGETS displaySlice
   DESTINATION lib
-  EXPORT displaySlice)
 
+  )
