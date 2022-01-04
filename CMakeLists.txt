@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+option(BUILD_SEP "Build SEP version of qtcube" ON)
 
 
 if(NOT SUBPACKAGE)
@@ -58,8 +59,10 @@ if(BUILD_DOC)
 endif(BUILD_DOC)
 
 if(NOT SUBPACKAGE)
+
+
   execute_process(COMMAND git submodule update --init --recursive --
-                          external/genericIO
+                          external/sep-ioLibs
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 
@@ -71,7 +74,11 @@ if(BUILD_TEST)
   enable_testing()
 endif(BUILD_TEST)
 
+if(BUILD_SEP)
+add_subdirectory(external/sep-ioLibs/external/genericIO)
+else(BUILD_SEP)
 add_subdirectory(external/genericIO)
+endif(BUILD_SEP)
 add_subdirectory(lib)
 add_subdirectory(python)
 include(CMakePackageConfigHelpers)

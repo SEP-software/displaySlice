@@ -1,0 +1,3 @@
+[submodule "external/sep-ioLibs"]
+	path = external/sep-ioLibs
+	url = http://cees-gitlab.Stanford.EDU/SEP-external/sep-iolibs.git
