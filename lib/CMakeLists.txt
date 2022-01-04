@@ -98,3 +98,7 @@ target_include_directories(
          )
 
 
+ install(
+  DESTINATION lib
+  EXPORT displaySlice)
+
