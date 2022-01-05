@@ -74,7 +74,7 @@ void byte_buffer::read_buffer(std::vector<int> &nwbuf, std::vector<int> &fwbuf,
                                     std::cerr<<"in else read"<<nwio[0]<<" "<<nwio[1]<<" "<<nwio[2]<<" "<<fwio[0]<<" "<<fwio[1]<<" "<<fwio[2]<<" "<<iread*block<<std::endl;
 
                   io->read_block_float(nwio, fsend, &tflt[iread * block]);
-                  io->set_clip(tflt, inum, nread * block);
+                  io->set_clip(tflt.data(), inum, nread * block);
                   io->return_clips(&bclip, &eclip);
 
                   io->convert_to_byte(tflt.data(), 0, cbuf.data(), 0, nread * block);
