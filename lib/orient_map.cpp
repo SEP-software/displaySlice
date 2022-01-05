@@ -32,8 +32,10 @@ orient_map::orient_map(bool rot, int i_ax1, int i_ax2, int *rotax,
   iax1 = i_ax1;
   iax2 = i_ax2;
 
-  rot_to_reg_1 = rr1->clone();
-  rot_to_reg_2 = rr2->clone();
+  if(rr1==nullptr) rot_to_reg_1=nullptr;
+  else rot_to_reg_1 = rr1->clone();
+  if(rr2==nullptr) rot_to_reg_2=nullptr;
+  else rot_to_reg_2 = rr2->clone();
   for (int i = 0; i < 2; i++) {
     rot_ax[i] = rotax[i];
     ax_rot[i].n = axrot[i].n;

@@ -60,7 +60,6 @@ orient_cube::orient_cube(std::shared_ptr<hypercube> h,
       ax_rot.push_back(a);
   }
 
-
   set_no_rotate();
   get_locs(rot_pt);
   init_map_1d();
@@ -83,7 +82,6 @@ orient_cube::orient_cube(std::shared_ptr<orient_cube> ori) {
   }
   serv = ori->serv;
   orient_num = serv->get_new_num();
-
 
   rotate = false;
   this->ang = ori->get_rot_angle();
@@ -164,8 +162,6 @@ void orient_cube::formIndexMap(int iax1, int iax2, bool rev1, bool rev2) {
       bs[shift_ax] = begs[b_s];
       e_s = es[shift_ax];
       es[shift_ax] = ends[e_s - 1];
-      //     fprintf(stderr,"setting up axis range1 as %d %d %d
-      //     %d\n",bs[0],es[0],b_s,e_s);
     }
     rot_maps[ibig].reset(new orient_map(
         rotate, iax1, iax2, rot_ax, ax_rot, rot_to_reg_1, rot_to_reg_2, bs,
@@ -322,7 +318,7 @@ void orient_cube::set_one_shift(int iax, float ov, std::vector<int> buf) {
   one_shift = buf;
   shift_ax = iax;
   int n = getAxis(shift_ax).n;
-  std::vector<int> begs(n),ends(n);
+  std::vector<int> begs(n), ends(n);
 
   oversamp = ov;
   // fprintf(stderr,"correct n? %d \n",n);
@@ -394,13 +390,11 @@ void orient_cube::set_one_shift(int iax, float ov, std::vector<int> buf) {
     ends[i1] += 1;
   }
 }
-void orient_cube::delete_all() {
-
-  delete_maps();
-}
+void orient_cube::delete_all() { delete_maps(); }
 void orient_cube::delete_maps() {
 
-
+  rot_to_reg_1 = nullptr;
+  rot_to_reg_2 = nullptr;
   rotation_change();
 }
 axis orient_cube::get_rot_axis(int iax) {
@@ -437,12 +431,11 @@ void orient_cube::form_maps() {
 
   //   float *buf=new float[a1.n*a2.n*2];
   float cs = cos(ang), sn = sin(ang);
-  rot_to_reg_1=std::make_shared<intTensor2D> (ax_rot[0].n,ax_rot[1].n);
-    rot_to_reg_2=std::make_shared<intTensor2D> (ax_rot[0].n,ax_rot[1].n);
+  rot_to_reg_1 = std::make_shared<intTensor2D>(ax_rot[0].n, ax_rot[1].n);
+  rot_to_reg_2 = std::make_shared<intTensor2D>(ax_rot[0].n, ax_rot[1].n);
 
   auto rot1 = xt::view(rot_to_reg_1->mat, xt::all(), xt::all());
   auto rot2 = xt::view(rot_to_reg_2->mat, xt::all(), xt::all());
-
 
   cs = cos(-ang);
   sn = sin(-ang);
@@ -452,22 +445,22 @@ void orient_cube::form_maps() {
     float p2 = ax_rot[1].o + ax_rot[1].d * i2;
     float p1 = ax_rot[0].o;
     for (int i1 = 0; i1 < ax_rot[0].n; i1++, i++) {
-      rot1(i2,i1) = (int)((((p1 - rot_cen[0]) * cs +
-                                     sn * (p2 - rot_cen[1]) + rot_cen[0]) -
-                                    a1.o) /
-                                       a1.d +
-                                   .5);
-      rot2(i2,i1)= (int)(((-(p1 - rot_cen[0]) * sn +
-                                     cs * (p2 - rot_cen[1]) + rot_cen[1]) -
-                                    a2.o) /
-                                       a2.d +
-                                   .5);
+      rot1(i2, i1) = (int)((((p1 - rot_cen[0]) * cs + sn * (p2 - rot_cen[1]) +
+                             rot_cen[0]) -
+                            a1.o) /
+                               a1.d +
+                           .5);
+      rot2(i2, i1) = (int)(((-(p1 - rot_cen[0]) * sn + cs * (p2 - rot_cen[1]) +
+                             rot_cen[1]) -
+                            a2.o) /
+                               a2.d +
+                           .5);
       p1 += ax_rot[0].d;
 
-      if (rot2(i2,i1)< 0 || rot2(i2,i1) >= a2.n ||
-         rot1(i2,i1) < 0 || rot1(i2,i1) >= a1.n) {
-        rot2(i2,i1) = -1;
-       rot1(i2,i1) = -1;
+      if (rot2(i2, i1) < 0 || rot2(i2, i1) >= a2.n || rot1(i2, i1) < 0 ||
+          rot1(i2, i1) >= a1.n) {
+        rot2(i2, i1) = -1;
+        rot1(i2, i1) = -1;
       }
     }
   }
@@ -554,13 +547,13 @@ void orient_cube::update_extents() {
     e_rot[0] = 0;
     b_rot[1] = ax_rot[1].n;
     e_rot[1] = 0;
-  auto rot1 = xt::view(rot_to_reg_1->mat, xt::all(), xt::all());
-  auto rot2 = xt::view(rot_to_reg_2->mat, xt::all(), xt::all());
+    auto rot1 = xt::view(rot_to_reg_1->mat, xt::all(), xt::all());
+    auto rot2 = xt::view(rot_to_reg_2->mat, xt::all(), xt::all());
 
     for (int i2 = 0; i2 < ax_rot[1].n; i2++) {
       for (int i1 = 0; i1 < ax_rot[0].n; i1++) {
-        if (rot1(i2,i1) >= b1 &&rot1(i2,i1) < e1 &&
-            rot2(i2,i1) >= b2 && rot2(i2,i1) < e2) {
+        if (rot1(i2, i1) >= b1 && rot1(i2, i1) < e1 && rot2(i2, i1) >= b2 &&
+            rot2(i2, i1) < e2) {
           b_rot[0] = std::min(b_rot[0], i1);
           b_rot[1] = std::min(b_rot[1], i2);
           e_rot[0] = std::max(e_rot[0], i1);
