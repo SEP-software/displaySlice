@@ -44,7 +44,8 @@ void byte_buffer::read_buffer(std::vector<int> &nwbuf, std::vector<int> &fwbuf,
   int nread = (min_read / block) + 1;
   if (nread * block > total)
     nread = total / block;
-  float *tflt = new float[nread * block];
+    std::cerr<<"allocating tfloat "<<nread*nblock<<std::endl;
+  std::vector<float> tflt(nread*nblock);
   // unsigned char *tbuf=new unsigned char [nblock];
   int iread = 0;
   std::vector<int> fsend(8, 0);
@@ -66,9 +67,12 @@ void byte_buffer::read_buffer(std::vector<int> &nwbuf, std::vector<int> &fwbuf,
               for (int i1 = 0; i1 < nloop[1]; i1++) {
                 fsend[1] = fwio[1] + i1;
                 if (iread < nread - 1 && io->not_byte()) {
+                  std::cerr<<"in if read"<<nwio[0]<<" "<<nwio[1]<<" "<<nwio[2]<<" "<<fwio[0]<<" "<<fwio[1]<<" "<<fwio[2]<<" "<<iread*block<<std::endl;
                   io->read_block_float(nwio, fsend, &tflt[iread * block]);
 
                 } else if (iread == nread - 1 && io->not_byte()) {
+                                    std::cerr<<"in else read"<<nwio[0]<<" "<<nwio[1]<<" "<<nwio[2]<<" "<<fwio[0]<<" "<<fwio[1]<<" "<<fwio[2]<<" "<<iread*block<<std::endl;
+
                   io->read_block_float(nwio, fsend, &tflt[iread * block]);
                   io->set_clip(tflt, inum, nread * block);
                   io->return_clips(&bclip, &eclip);
@@ -88,8 +92,7 @@ void byte_buffer::read_buffer(std::vector<int> &nwbuf, std::vector<int> &fwbuf,
       }
     }
   }
-  if (tflt != 0)
-    delete[] tflt;
+ 
   calc_histo();
 
   io->return_clips(&bclip, &eclip);
