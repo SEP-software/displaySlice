@@ -226,6 +226,7 @@ int buffer::resize_buffer(std::vector<int> &njunk, std::vector<int> &fjunk,
 
 std::shared_ptr<longTensor2D>
 buffer::gridToIndex(std::shared_ptr<longTensor2D> ind) {
+  if (same) return ind;
   std::shared_ptr<longTensor2D> in = ind->clone(), out = ind->clone();
   auto inA = xt::view(in->mat, xt::all(), xt::all());
   auto outA = xt::view(out->mat, xt::all(), xt::all());
