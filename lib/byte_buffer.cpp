@@ -44,7 +44,6 @@ void byte_buffer::read_buffer(std::vector<int> &nwbuf, std::vector<int> &fwbuf,
   int nread = (min_read / block) + 1;
   if (nread * block > total)
     nread = total / block;
-  std::cerr << "allocating tfloat " << nread * nblock << std::endl;
   std::vector<float> tflt(nread * nblock);
   // unsigned char *tbuf=new unsigned char [nblock];
   int iread = 0;

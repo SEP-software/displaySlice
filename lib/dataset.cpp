@@ -183,6 +183,7 @@ dataset::getCharData(std::shared_ptr<orient_cube> pos, int iax1, int f1, int e1,
   for (int i2 = 0; i2 < abs(e1 - f1); i2++)
     for (int i1 = 0; i1 < abs(e1 - f1); i1++) {
       int tmp = bufA(i2, i1);
+      std::cerr<<i1<<" "<<i2<<" "<<tmp<<std::endl;
       bufA(i2, i1) = conv[tmp];
     }
 
