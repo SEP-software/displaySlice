@@ -354,7 +354,7 @@ void orient_map::formIndexMap() {
   int i = 0;
   // Impiclict assumption that the rotated axis is held....
   if (!rotate) {
-    std::cerr<<"in not rotate form map ptr"<<std::err:
+    std::cerr<<"in not rotate form map ptr"<<std::endl;
     for (int i2 = 0; i2 < n2; i2++) {
       for (int i1 = 0; i1 < n1; i1++, i++) {
         ilast = mapA(i2, i1) =
