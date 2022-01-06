@@ -361,7 +361,7 @@ void orient_map::formIndexMap() {
             (dir1 * i1 + f1) * j1 + (dir2 * i2 + f2) * j2 + first;
       }
     }
-
+    std::cerr<<"FIRST THREE "<<mapA(0,0)<<" "<<mapA(0,1)<<" "<<mapA(0,2)<<std::endl;
   } else {
     std::shared_ptr<intTensor2D> m1 = rot_to_reg_1, m2 = rot_to_reg_2, t;
     int ia1, ia2;
