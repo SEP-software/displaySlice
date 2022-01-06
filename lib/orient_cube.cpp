@@ -184,7 +184,7 @@ std::shared_ptr<longTensor2D> orient_cube::getIndexMapPtr(int iax1, int iax2,
                                                           int ioff) {
   int i3a, i3v;
   int ibig = form_map_name(iax1, iax2, ioff, &i3a, &i3v);
-
+  std::cerr<<"form index map name"<<std::endl;
   int f_1, e_1, f_2, e_2;
   f_1 = f1;
   e_1 = e1;
