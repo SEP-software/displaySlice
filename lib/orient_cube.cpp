@@ -184,7 +184,7 @@ std::shared_ptr<longTensor2D> orient_cube::getIndexMapPtr(int iax1, int iax2,
                                                           int ioff) {
   int i3a, i3v;
   int ibig = form_map_name(iax1, iax2, ioff, &i3a, &i3v);
-  std::cerr<<"form index map name"<<std::endl;
+  std::cerr<<"form index map name "<<ibig<<std::endl;
   int f_1, e_1, f_2, e_2;
   f_1 = f1;
   e_1 = e1;
@@ -200,7 +200,6 @@ std::shared_ptr<longTensor2D> orient_cube::getIndexMapPtr(int iax1, int iax2,
   }
   bool rev1, rev2;
   bool found = true;
-  std::cerr<<"in form index map"<<std::endl;
   if (rot_maps.count(ibig) == 0) {
     std::cerr<<"In not rotated"<<std::endl;
     // assert(1==0);
@@ -208,6 +207,7 @@ std::shared_ptr<longTensor2D> orient_cube::getIndexMapPtr(int iax1, int iax2,
     rev1 = false;
     rev2 = false;
   } else {
+    std::cerr<<"map exists"<<std::endl;
     int locs[8];
     get_locs(locs);
     locs[i3a] = i3v;
@@ -216,9 +216,11 @@ std::shared_ptr<longTensor2D> orient_cube::getIndexMapPtr(int iax1, int iax2,
     rev2 = rot_maps[ibig]->rev2;
   }
   if (found) {
+    std::cerr<<"in found"<<std::endl;
     update_map_order(ibig, false);
     return rot_maps[ibig]->getIndexMapPtr();
   } else {
+    std::cerr<<"in else"<<std::endl;
     int ns[8], bs[8], es[8], iloc[8];
     get_ns(ns);
     get_begs(bs);
