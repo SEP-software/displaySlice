@@ -163,6 +163,7 @@ void orient_cube::formIndexMap(int iax1, int iax2, bool rev1, bool rev2) {
       e_s = es[shift_ax];
       es[shift_ax] = ends[e_s - 1];
     }
+    std::cerr<<"forming indexamp "<<ibig<<std::endl;
     rot_maps[ibig].reset(new orient_map(
         rotate, iax1, iax2, rot_ax, ax_rot, rot_to_reg_1, rot_to_reg_2, bs,
         iloc, es, ns, rev1, rev2, one_shift, shift_ax, b_s, e_s));

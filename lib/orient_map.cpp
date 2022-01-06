@@ -48,7 +48,6 @@ orient_map::orient_map(bool rot, int i_ax1, int i_ax2, int *rotax,
   }
   map = 0;
   samp_exist = 0;
-  // fprintf(stderr,"BEG END %d %d \n",beg[0],end[0]);
 }
 std::vector<int> orient_map::return_picks_index(const std::string &col) {
   std::vector<int> out;
@@ -319,7 +318,7 @@ bool orient_map::check_same(int *i_loc, int f1, int e1, int f2, int e2) {
 void orient_map::formIndexMap() {
   //   fprintf(stderr,"AQQ 2ORIE \n");
 
-  std::cerr << "in form index map ptr" << std::endl;
+  std::cerr << "in form index map ptr " <<iax1<<" "<<iax2<< std::endl;
   int f1 = beg[iax1], e1 = end[iax1];
 
   int f2 = beg[iax2], e2 = end[iax2];
@@ -355,6 +354,7 @@ void orient_map::formIndexMap() {
   int i = 0;
   // Impiclict assumption that the rotated axis is held....
   if (!rotate) {
+    std::cerr<<"in not rotate form map ptr"<<std::err:
     for (int i2 = 0; i2 < n2; i2++) {
       for (int i1 = 0; i1 < n1; i1++, i++) {
         ilast = mapA(i2, i1) =
