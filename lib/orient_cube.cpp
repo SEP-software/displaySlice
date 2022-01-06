@@ -220,8 +220,8 @@ std::shared_ptr<longTensor2D> orient_cube::getIndexMapPtr(int iax1, int iax2,
     std::cerr<<"in found"<<std::endl;
     update_map_order(ibig, false);
     std::shared_ptr<longTensor2D> ee= rot_maps[ibig]->getIndexMapPtr();
-      auto rot2 = xt::view(ee->mat, xt::all(), xt::all());
-      std::cerr<<"found map check "<<rot2(0,0)<<" "<<rot(0,1)<<" "<<rot(0,2)<<std:endl;
+      auto rot = xt::view(ee->mat, xt::all(), xt::all());
+      std::cerr<<"found map check "<<rot(0,0)<<" "<<rot(0,1)<<" "<<rot(0,2)<<std:endl;
       return ee;
 
   } else {
