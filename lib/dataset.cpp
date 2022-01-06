@@ -180,10 +180,10 @@ dataset::getCharData(std::shared_ptr<orient_cube> pos, int iax1, int f1, int e1,
       buf[ibuf]->getCharData(pos, iax1, f1, e1, iax2, f2, e2);
   auto bufA = xt::view(cbuf->mat, xt::all(), xt::all());
 
-  for (int i2 = 0; i2 < abs(e1 - f1); i2++)
+  for (int i2 = 0; i2 < abs(e2 - f2); i2++)
     for (int i1 = 0; i1 < abs(e1 - f1); i1++) {
       int tmp = bufA(i2, i1);
-      std::cerr<<i1<<" "<<i2<<" "<<tmp<<std::endl;
+    //  std::cerr<<i1<<" "<<i2<<" "<<tmp<<std::endl;
       bufA(i2, i1) = conv[tmp];
     }
 
