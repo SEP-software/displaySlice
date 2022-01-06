@@ -158,14 +158,14 @@ dataset::getCharData(std::shared_ptr<orient_cube> pos, int iax1, int iax2,
                      int n, long long *index) {
   std::vector<int> nloc = return_io_hyper()->getNs();
   int ibuf = check_load_buffer(pos, iax1, iax2);
-  std::shared_ptr<byteTensor2D> cbuf= buf[ibuf]->getCharData(pos, iax1, 0, nloc[iax1],
-                                                       iax2, 0, nloc[iax2]);
+  std::shared_ptr<byteTensor2D> cbuf =
+      buf[ibuf]->getCharData(pos, iax1, 0, nloc[iax1], iax2, 0, nloc[iax2]);
 
   std::vector<int> ns = cbuf->getHyper()->getNs();
   auto bufA = xt::view(cbuf->mat, xt::all(), xt::all());
 
   for (int i2 = 0; i2 < ns[1]; i2++)
-    for (int i1 = 0; i1 < ns[0] ; i1++)
+    for (int i1 = 0; i1 < ns[0]; i1++)
       bufA(i2, i1) = conv[bufA(i2, i1)];
 
   return cbuf;
@@ -181,15 +181,16 @@ dataset::getCharData(std::shared_ptr<orient_cube> pos, int iax1, int f1, int e1,
   auto bufA = xt::view(cbuf->mat, xt::all(), xt::all());
 
   for (int i2 = 0; i2 < abs(e1 - f1); i2++)
-    for (int i1 = 0 ; i1 < abs(e1 - f1); i1++){
-      int tmp=bufA(i2,i1);
+    for (int i1 = 0; i1 < abs(e1 - f1); i1++) {
+      int tmp = bufA(i2, i1);
       bufA(i2, i1) = conv[tmp];
-]
+    }
+
   return cbuf;
 }
 std::shared_ptr<floatTensor2D>
-      dataset::getFloatData(std::shared_ptr<orient_cube> pos, int iax1, int f1,
-                            int e1, int iax2, int f2, int e2) {
+dataset::getFloatData(std::shared_ptr<orient_cube> pos, int iax1, int f1,
+                      int e1, int iax2, int f2, int e2) {
   int ibuf = check_load_buffer(pos, iax1, iax2);
   return buf[ibuf]->getFloatData(pos, iax1, f1, e1, iax2, f2, e2);
 }
