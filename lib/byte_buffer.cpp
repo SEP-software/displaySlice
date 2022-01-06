@@ -125,7 +125,7 @@ byte_buffer::getCharData(std::shared_ptr<longTensor2D> mp) {
 
   std::shared_ptr<longTensor2D> index = gridToIndex(mp);
   auto indexA = xt::view(index->mat, xt::all(), xt::all());
-
+  std::cerr<<"Map issue'?"<<indexA(0,0)<<" "<<indexA(0,1)<<" "<<indexA(0,2)<<std::endl;
   for (int i = 0, i2 = 0; i2 < ns[1]; i2++) {
     for (int i1 = 0; i1 < ns[0]; i1++, i++) {
       // fprintf(stderr,"LOOK WHAT %d %lld \n",i,index[i]);
