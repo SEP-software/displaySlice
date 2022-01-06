@@ -32,10 +32,14 @@ orient_map::orient_map(bool rot, int i_ax1, int i_ax2, int *rotax,
   iax1 = i_ax1;
   iax2 = i_ax2;
 
-  if(rr1==nullptr) rot_to_reg_1=nullptr;
-  else rot_to_reg_1 = rr1->clone();
-  if(rr2==nullptr) rot_to_reg_2=nullptr;
-  else rot_to_reg_2 = rr2->clone();
+  if (rr1 == nullptr)
+    rot_to_reg_1 = nullptr;
+  else
+    rot_to_reg_1 = rr1->clone();
+  if (rr2 == nullptr)
+    rot_to_reg_2 = nullptr;
+  else
+    rot_to_reg_2 = rr2->clone();
   for (int i = 0; i < 2; i++) {
     rot_ax[i] = rotax[i];
     ax_rot[i].n = axrot[i].n;
@@ -315,6 +319,7 @@ bool orient_map::check_same(int *i_loc, int f1, int e1, int f2, int e2) {
 void orient_map::formIndexMap() {
   //   fprintf(stderr,"AQQ 2ORIE \n");
 
+  std::cerr << "in form index map ptr" << std::endl;
   int f1 = beg[iax1], e1 = end[iax1];
 
   int f2 = beg[iax2], e2 = end[iax2];
@@ -352,7 +357,8 @@ void orient_map::formIndexMap() {
   if (!rotate) {
     for (int i2 = 0; i2 < n2; i2++) {
       for (int i1 = 0; i1 < n1; i1++, i++) {
-        ilast = mapA(i2, i1);
+        ilast = mapA(i2, i1) =
+            (dir1 * i1 + f1) * j1 + (dir2 * i2 + f2) * j2 + first;
       }
     }
 
@@ -428,13 +434,13 @@ void orient_map::formIndexMap() {
         if (iax1 == rot_ax[0]) {
           int ir1 = iloc[rot_ax[1]];
           //       int   ioth=rot_ax[1];
-       auto mm1 = xt::view(m1->mat, xt::all(), xt::all());
-       auto mm2 = xt::view(m2->mat, xt::all(), xt::all());
+          auto mm1 = xt::view(m1->mat, xt::all(), xt::all());
+          auto mm2 = xt::view(m2->mat, xt::all(), xt::all());
 
           for (int i2 = 0; i2 < n2; i2++) {
             for (int i1 = 0; i1 < n1; i1++, i++) {
-              int ib = mm2(ir1,i1 * dir1 + f1);
-              int ia = mm1(ir1,i1 * dir1 + f1);
+              int ib = mm2(ir1, i1 * dir1 + f1);
+              int ia = mm1(ir1, i1 * dir1 + f1);
               if (ia < b1 || ia >= e1 || ib < b2 || ib >= e2) {
                 mapA(i2, i1) = -1;
               } else {
@@ -448,13 +454,13 @@ void orient_map::formIndexMap() {
         } else {
           int ir1 = iloc[rot_ax[0]];
           //    int  ioth=rot_ax[0];
-       auto mm2 = xt::view(m2->mat, xt::all(), xt::all());
-       auto mm1 = xt::view(m1->mat, xt::all(), xt::all());
+          auto mm2 = xt::view(m2->mat, xt::all(), xt::all());
+          auto mm1 = xt::view(m1->mat, xt::all(), xt::all());
 
           for (int i2 = 0; i2 < n2; i2++) {
             for (int i1 = 0; i1 < n1; i1++, i++) {
-              int ib = mm2(i1 * dir1 + f1,ir1);
-              int ia = mm1(i1 * dir1 + f1,ir1);
+              int ib = mm2(i1 * dir1 + f1, ir1);
+              int ia = mm1(i1 * dir1 + f1, ir1);
               if (ia < b1 || ia >= e1 || ib < b2 || ib >= e2)
                 mapA(i2, i1) = -1;
               else {
@@ -476,10 +482,10 @@ void orient_map::formIndexMap() {
 
           for (int i2 = 0; i2 < n2; i2++) {
             for (int i1 = 0; i1 < n1; i1++, i++) {
-              int ia = mm1(ir1,i2 * dir2 + f2);
-              int ib = mm2(ir1,i2 * dir2 + f2);
+              int ia = mm1(ir1, i2 * dir2 + f2);
+              int ib = mm2(ir1, i2 * dir2 + f2);
               if (ia < b1 || ia >= e1 || ib < b2 || ib >= e2)
-                mapA(i2,i1) = -1;
+                mapA(i2, i1) = -1;
               else {
                 int i_2 = ia;
                 int i_1 = i1 * dir1 + f1;
@@ -489,15 +495,15 @@ void orient_map::formIndexMap() {
             }
           }
         } else {
-                 auto mm2 = xt::view(m2->mat, xt::all(), xt::all());
-       auto mm1 = xt::view(m1->mat, xt::all(), xt::all());
+          auto mm2 = xt::view(m2->mat, xt::all(), xt::all());
+          auto mm1 = xt::view(m1->mat, xt::all(), xt::all());
 
           int ir1 = iloc[rot_ax[0]];
           //    int  ioth=rot_ax[0];
           for (int i2 = 0; i2 < n2; i2++) {
             for (int i1 = 0; i1 < n1; i1++, i++) {
-              int ia = mm1(i2 * dir2 + f2,ir1);
-              int ib = mm2(i2 * dir2 + f2,ir1);
+              int ia = mm1(i2 * dir2 + f2, ir1);
+              int ib = mm2(i2 * dir2 + f2, ir1);
               if (ia < b1 || ia >= e1 || ib < b2 || ib >= e2)
                 mapA(i2, i1) = -1;
               else {

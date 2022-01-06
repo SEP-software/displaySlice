@@ -200,7 +200,9 @@ std::shared_ptr<longTensor2D> orient_cube::getIndexMapPtr(int iax1, int iax2,
   }
   bool rev1, rev2;
   bool found = true;
+  std::cerr<<"in form index map"<<std::endl;
   if (rot_maps.count(ibig) == 0) {
+    std::cerr<<"In not rotated"<<std::endl;
     // assert(1==0);
     found = false;
     rev1 = false;
@@ -236,6 +238,7 @@ std::shared_ptr<longTensor2D> orient_cube::getIndexMapPtr(int iax1, int iax2,
     }
     iloc[i3a] = i3v;
 
+  std::cerr<<"Making new orient map"<<std::endl;
     rot_maps[ibig].reset(new orient_map(
         rotate, iax1, iax2, rot_ax, ax_rot, rot_to_reg_1, rot_to_reg_2,
 

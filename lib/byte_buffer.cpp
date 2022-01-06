@@ -44,8 +44,8 @@ void byte_buffer::read_buffer(std::vector<int> &nwbuf, std::vector<int> &fwbuf,
   int nread = (min_read / block) + 1;
   if (nread * block > total)
     nread = total / block;
-    std::cerr<<"allocating tfloat "<<nread*nblock<<std::endl;
-  std::vector<float> tflt(nread*nblock);
+  std::cerr << "allocating tfloat " << nread * nblock << std::endl;
+  std::vector<float> tflt(nread * nblock);
   // unsigned char *tbuf=new unsigned char [nblock];
   int iread = 0;
   std::vector<int> fsend(8, 0);
@@ -67,17 +67,16 @@ void byte_buffer::read_buffer(std::vector<int> &nwbuf, std::vector<int> &fwbuf,
               for (int i1 = 0; i1 < nloop[1]; i1++) {
                 fsend[1] = fwio[1] + i1;
                 if (iread < nread - 1 && io->not_byte()) {
-                  std::cerr<<"in if read"<<nwio[0]<<" "<<nwio[1]<<" "<<nwio[2]<<" "<<fwio[0]<<" "<<fwio[1]<<" "<<fwio[2]<<" "<<iread*block<<std::endl;
                   io->read_block_float(nwio, fsend, &tflt[iread * block]);
 
                 } else if (iread == nread - 1 && io->not_byte()) {
-                                    std::cerr<<"in else read"<<nwio[0]<<" "<<nwio[1]<<" "<<nwio[2]<<" "<<fwio[0]<<" "<<fwio[1]<<" "<<fwio[2]<<" "<<iread*block<<std::endl;
 
                   io->read_block_float(nwio, fsend, &tflt[iread * block]);
                   io->set_clip(tflt.data(), inum, nread * block);
                   io->return_clips(&bclip, &eclip);
 
-                  io->convert_to_byte(tflt.data(), 0, cbuf.data(), 0, nread * block);
+                  io->convert_to_byte(tflt.data(), 0, cbuf.data(), 0,
+                                      nread * block);
 
                 } else {
                   io->read_block_byte(
@@ -92,7 +91,7 @@ void byte_buffer::read_buffer(std::vector<int> &nwbuf, std::vector<int> &fwbuf,
       }
     }
   }
- 
+
   calc_histo();
 
   io->return_clips(&bclip, &eclip);
@@ -110,19 +109,19 @@ byte_buffer::getCharData(std::shared_ptr<orient_cube> pos, int iax1, int f1,
     pos->set_no_rotate();
   }
   int n1 = abs(e1 - f1), n2 = abs(e2 - f2);
+  std::cerr<<"i think I am here"<<std::endl;
   std::shared_ptr<longTensor2D> index =
       pos->getIndexMapPtr(iax1, iax2, f1, e1, f2, e2, 0);
 
   return getCharData(index);
-
 }
 
 std::shared_ptr<byteTensor2D>
-byte_buffer::getCharData(
-                         std::shared_ptr<longTensor2D> mp) {
+byte_buffer::getCharData(std::shared_ptr<longTensor2D> mp) {
   std::vector<int> ns = mp->getHyper()->getNs();
   long long n = ns[0] * ns[1];
-  std::shared_ptr<byteTensor2D> out = std::make_shared<byteTensor2D>(ns[0], ns[1]);
+  std::shared_ptr<byteTensor2D> out =
+      std::make_shared<byteTensor2D>(ns[0], ns[1]);
   auto outA = xt::view(out->mat, xt::all(), xt::all());
 
   std::shared_ptr<longTensor2D> index = gridToIndex(mp);
@@ -143,7 +142,7 @@ byte_buffer::getCharData(
 }
 std::shared_ptr<floatTensor2D>
 byte_buffer::getFloatData(std::shared_ptr<orient_cube> pos, int iax1, int f1,
-                            int e1, int iax2, int f2, int e2) {
+                          int e1, int iax2, int f2, int e2) {
 
   if (!hold[iax1] || !hold[iax2])
     _par->error("Internal error don't hold axes requested");
