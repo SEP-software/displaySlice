@@ -179,7 +179,6 @@ dataset::getCharData(std::shared_ptr<orient_cube> pos, int iax1, int f1, int e1,
   std::shared_ptr<byteTensor2D> cbuf =
       buf[ibuf]->getCharData(pos, iax1, f1, e1, iax2, f2, e2);
 
-  std::cerr << iax1 << " " << iax2 << " " << ibuf << " slice" << std::endl;
   auto bufA = xt::view(cbuf->mat, xt::all(), xt::all());
 
   for (int i2 = 0; i2 < abs(e2 - f2); i2++)

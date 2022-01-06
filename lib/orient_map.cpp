@@ -318,7 +318,6 @@ bool orient_map::check_same(int *i_loc, int f1, int e1, int f2, int e2) {
 void orient_map::formIndexMap() {
   //   fprintf(stderr,"AQQ 2ORIE \n");
 
-  std::cerr << "in form index map ptr " <<iax1<<" "<<iax2<< std::endl;
   int f1 = beg[iax1], e1 = end[iax1];
 
   int f2 = beg[iax2], e2 = end[iax2];
@@ -354,14 +353,12 @@ void orient_map::formIndexMap() {
   int i = 0;
   // Impiclict assumption that the rotated axis is held....
   if (!rotate) {
-    std::cerr<<"in not rotate form map ptr"<<std::endl;
     for (int i2 = 0; i2 < n2; i2++) {
       for (int i1 = 0; i1 < n1; i1++, i++) {
         ilast = mapA(i2, i1) =
             (dir1 * i1 + f1) * j1 + (dir2 * i2 + f2) * j2 + first;
       }
     }
-    std::cerr<<"FIRST THREE "<<mapA(0,0)<<" "<<mapA(0,1)<<" "<<mapA(0,2)<<std::endl;
   } else {
     std::shared_ptr<intTensor2D> m1 = rot_to_reg_1, m2 = rot_to_reg_2, t;
     int ia1, ia2;

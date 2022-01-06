@@ -163,7 +163,6 @@ void orient_cube::formIndexMap(int iax1, int iax2, bool rev1, bool rev2) {
       e_s = es[shift_ax];
       es[shift_ax] = ends[e_s - 1];
     }
-    std::cerr<<"forming indexamp "<<ibig<<std::endl;
     rot_maps[ibig].reset(new orient_map(
         rotate, iax1, iax2, rot_ax, ax_rot, rot_to_reg_1, rot_to_reg_2, bs,
         iloc, es, ns, rev1, rev2, one_shift, shift_ax, b_s, e_s));
@@ -185,7 +184,6 @@ std::shared_ptr<longTensor2D> orient_cube::getIndexMapPtr(int iax1, int iax2,
                                                           int ioff) {
   int i3a, i3v;
   int ibig = form_map_name(iax1, iax2, ioff, &i3a, &i3v);
-  std::cerr<<"form index map name "<<ibig<<std::endl;
   int f_1, e_1, f_2, e_2;
   f_1 = f1;
   e_1 = e1;
@@ -202,13 +200,11 @@ std::shared_ptr<longTensor2D> orient_cube::getIndexMapPtr(int iax1, int iax2,
   bool rev1, rev2;
   bool found = true;
   if (rot_maps.count(ibig) == 0) {
-    std::cerr<<"In not rotated"<<std::endl;
     // assert(1==0);
     found = false;
     rev1 = false;
     rev2 = false;
   } else {
-    std::cerr<<"map exists"<<std::endl;
     int locs[8];
     get_locs(locs);
     locs[i3a] = i3v;
@@ -217,15 +213,12 @@ std::shared_ptr<longTensor2D> orient_cube::getIndexMapPtr(int iax1, int iax2,
     rev2 = rot_maps[ibig]->rev2;
   }
   if (found) {
-    std::cerr<<"in found"<<std::endl;
     update_map_order(ibig, false);
     std::shared_ptr<longTensor2D> ee= rot_maps[ibig]->getIndexMapPtr();
       auto rot = xt::view(ee->mat, xt::all(), xt::all());
-      std::cerr<<"found map check "<<rot(0,0)<<" "<<rot(0,1)<<" "<<rot(0,2)<<std::endl;
       return ee;
 
   } else {
-    std::cerr<<"in else"<<std::endl;
     int ns[8], bs[8], es[8], iloc[8];
     get_ns(ns);
     get_begs(bs);
@@ -245,7 +238,6 @@ std::shared_ptr<longTensor2D> orient_cube::getIndexMapPtr(int iax1, int iax2,
     }
     iloc[i3a] = i3v;
 
-  std::cerr<<"Making new orient map"<<std::endl;
     rot_maps[ibig].reset(new orient_map(
         rotate, iax1, iax2, rot_ax, ax_rot, rot_to_reg_1, rot_to_reg_2,
 
