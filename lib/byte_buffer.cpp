@@ -30,7 +30,7 @@ void byte_buffer::read_buffer(std::vector<int> &nwbuf, std::vector<int> &fwbuf,
     nblock = nblock * (long long)nwio[i];
   }
 
-  long long min_read = 500 * 1000 * 1000;
+  long long min_read = (long long)(1000*10)* (long long)( 1000 * 1000);
 
   long long total = 1;
   block = 1;
