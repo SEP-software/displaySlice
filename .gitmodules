@@ -1,4 +1,4 @@
 [submodule "external/sep-ioLibs"]
 	path = external/sep-ioLibs
-	url = http://cees-gitlab.Stanford.EDU/SEP-external/sep-iolibs.git
+	url = git@zapad.stanford.edu:SEP-external/sep-iolibs.git
 	ignore = dirty
