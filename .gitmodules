@@ -1,4 +1,3 @@
-[submodule "external/sep-ioLibs"]
-	path = external/sep-ioLibs
-	url = git@zapad.stanford.edu:SEP-external/sep-iolibs.git
-	ignore = dirty
+[submodule "external/displaySlice"]
+	path = external/displaySlice
+	url = http://zapad.stanford.edu/SEP-external/displayslice.git
