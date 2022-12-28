@@ -1,0 +1,3 @@
+[submodule "external/sep-iolibs"]
+	path = external/sep-iolibs
+	url = http://zapad.stanford.edu/SEP-external/sep-iolibs.git
