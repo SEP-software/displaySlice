@@ -62,7 +62,7 @@ if(NOT SUBPACKAGE)
 
 
   execute_process(COMMAND git submodule update --init --recursive --
-                          external/sep-ioLibs
+                          external/sep-iolibs
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 
